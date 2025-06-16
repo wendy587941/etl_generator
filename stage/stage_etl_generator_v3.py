@@ -106,7 +106,7 @@ def generate_sql_for_table(args):
     file_content = f"-- SQL for table: {table_name}\n{sql_head}\n{final_sql_content}{sql_tail}\n"
 
     # Write to file
-    with open(os.path.join(OUTPUT_DIR, f'{table_name}_stage_g0001.sql'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(OUTPUT_DIR, f'{table_name}_g0001.sql'), 'w', encoding='utf-8') as f:
         f.write(file_content + '\n')
     
     return table_name
@@ -148,17 +148,17 @@ def process_transform_rows(data_row, audit_tables, OUTPUT_DIR):
         else:
             file_content = f"-- SQL for table: {table_name}\n{trans_sql_head_fmt}\n{final_sql_content}\n{trans_sql_tail}{non_check_sql}\n\n{trans_sql_tail_2}"
 
-        with open(os.path.join(OUTPUT_DIR, f'{table_name}_stage_g0001.sql'), 'a', encoding='utf-8') as f:
+        with open(os.path.join(OUTPUT_DIR, f'{table_name}_g0001.sql'), 'a', encoding='utf-8') as f:
             f.write(file_content + '\n')
 
         # Progress display
         if file_counter is not None and file_counter_lock is not None:
             with file_counter_lock:
                 file_counter.value += 1
-                print(f"Generated {file_counter.value} files: {table_name}_stage_g0001.sql")
+                print(f"Generated {file_counter.value} files: {table_name}_g0001.sql")
 
         else:
-            print(f"Generated file: {table_name}_stage_g0001.sql")
+            print(f"Generated file: {table_name}_g0001.sql")
 
 def main(OUTPUT_DIR):
     #index_df, stage_df, base_df = load_data()

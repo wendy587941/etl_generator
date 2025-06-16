@@ -50,11 +50,14 @@ WHERE S1.CHECK_RESULT = '0'"""
 #異動與初始規則未納入
 trans_sql_head = """/* TRANSFORM_DATA */
 
-/* 1. Delete 目的表 Stage data_exch_date = '#排程啟動日#' */
-DELETE FROM ${{TARGET_SCHEMA}}.${{TARGET_TABLE}} WHERE DATA_EXCH_DATE = TO_DATE('${{BD_EXCH_DATE}}', 'yyyy-MM-dd');
+/* 1.Truncate 目的表 */
+TRUNCATE TABLE ${{TARGET_SCHEMA}}.${{TARGET_TABLE}};
 
 -- Trinity SQL Script
-/* 2. 抽取 Prestage 同期別進行新增 */
+/* 
+2. 抽取 正式區Stage DATA_EXCH_DATE='#資料交換期別#' 之資料
+3. 遮罩後寫入驗證區Prestage 
+*/
 INSERT INTO ${{TARGET_SCHEMA}}.${{TARGET_TABLE}}
 (
 {col_names}
@@ -63,7 +66,7 @@ SELECT""";
 
 #異動與初始規則未納入
 trans_sql_tail = """FROM ${SOURCE_TABLE_OWNER}.${SOURCE_TABLE}
-WHERE DATA_EXCH_DATE = to_date('${BD_EXCH_DATE}', 'yyyy-MM-dd')
+WHERE ${DATA_LIFE_BASE} = to_date('${BD_EXCH_DATE}', 'yyyy-MM-dd')
 """
 
 non_check_sql = """;"""
