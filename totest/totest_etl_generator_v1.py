@@ -124,16 +124,30 @@ def process_transform_rows(data_row, audit_tables, OUTPUT_DIR):
     # 只有當 '轉換規則' 不是 NaN 或空字串時才呼叫 get_trans_rule
     data_row['Transform_Function'] = data_row.apply(
         lambda row: get_trans_rule(
-            row['轉換規則'],
+            row['轉換規則'] if pd.notna(row['轉換規則']) and str(row['轉換規則']).strip() != '' 
+            else row['驗證環境遮罩規則'] if pd.notna(row['驗證環境遮罩規則']) and str(row['驗證環境遮罩規則']).strip() != '' 
+            else None,
             row['資料欄位名稱'],
             row['不為空值'] if '不為空值' in row else None
-        ) if pd.notna(row['轉換規則']) and str(row['轉換規則']).strip() != '' else None,
+        ) if (
+            (pd.notna(row['轉換規則']) and str(row['轉換規則']).strip() != '') or 
+            (pd.notna(row['驗證環境遮罩規則']) and str(row['驗證環境遮罩規則']).strip() != '')
+        ) else None,
         axis=1
     )
 
-    data_row['Transform_Function'] = data_row['Transform_Function'].fillna(
-        data_row['轉換規則'].str.strip().str.upper()
-    ).fillna(data_row['資料欄位名稱'].str.strip().str.upper())
+
+    data_row['Transform_Function'] = data_row['Transform_Function'].replace('', pd.NA).fillna(
+        data_row.apply(
+            lambda row: row['轉換規則'].strip().upper() if pd.notna(row['轉換規則']) and str(row['轉換規則']).strip() != '' 
+            else row['驗證環境遮罩規則'].strip().upper() if pd.notna(row['驗證環境遮罩規則']) and str(row['驗證環境遮罩規則']).strip() != '' 
+            else None,
+            axis=1
+        )
+    ).fillna(
+        data_row['資料欄位名稱'].str.strip().str.upper()
+    )
+
 
     grouped_rows = data_row.groupby('資料表名稱')
     for table_name, group in grouped_rows:

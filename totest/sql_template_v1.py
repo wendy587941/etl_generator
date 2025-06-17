@@ -48,12 +48,12 @@ WHERE S1.CHECK_RESULT = '0'"""
 
 #TRANSFORM SQL Template
 #異動與初始規則未納入
-trans_sql_head = """/* TRANSFORM_DATA */
+trans_sql_head = """-- Trinity SQL Script
+/* TRANSFORM_DATA */
 
 /* 1.Truncate 目的表 */
 TRUNCATE TABLE ${{TARGET_SCHEMA}}.${{TARGET_TABLE}};
 
--- Trinity SQL Script
 /* 
 2. 抽取 正式區Stage DATA_EXCH_DATE='#資料交換期別#' 之資料
 3. 遮罩後寫入驗證區Prestage 
